@@ -3,20 +3,19 @@ sudo: false
 addons:
     apt_packages:
         - lib32stdc++6  # needed for spcomp
+        - python3-pip
+        - python3-setuptools
 
 env:
     - SMVERSION=1.10
+    - SMBUILDER_REPO=https://github.com/mathiassmichno/sm-builder
 
 before_script:
     # setup submodules
     - git submodule update --init
 
     # install smbuilder
-    - git clone https://github.com/splewis/sm-builder
-    - cd sm-builder
-    - pip install --user -r requirements.txt
-    - python setup.py install --prefix=~/.local
-    - cd ..
+    - pip3 install --user git+${SMBUILDER_REPO}
 
     # install the sourcemod compiler
     - SMPACKAGE="http://sourcemod.net/latest.php?os=linux&version=${SMVERSION}"
@@ -29,7 +28,6 @@ before_script:
     - wget https://raw.githubusercontent.com/KyleSanderson/SteamWorks/master/Pawn/includes/SteamWorks.inc
     - cd ../../../..
     - cp -r ./dependencies/sm-json/addons/sourcemod/scripting/include/* ./addons/sourcemod/scripting/include
-    
 
 script:
     - smbuilder --flags="-E"
