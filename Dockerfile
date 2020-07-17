@@ -17,7 +17,7 @@ RUN mkdir /get5src
 COPY dockerrunscript.sh /runscripts
 WORKDIR /get5
 
-RUN git clone https://github.com/splewis/sm-builder
+RUN git clone https://github.com/mathiassmichno/sm-builder
 WORKDIR /get5/sm-builder
 RUN pip install --user -r requirements.txt
 RUN python setup.py install --prefix=~/.local
@@ -29,7 +29,7 @@ RUN tar xfz $(basename ${SMPACKAGE})
 RUN chmod +x /get5/addons/sourcemod/scripting/spcomp
 ENV PATH "$PATH:/get5/addons/sourcemod/scripting:/root/.local/bin"
 WORKDIR /get5/addons/sourcemod/scripting/include
-RUN wget https://raw.githubusercontent.com/KyleSanderson/SteamWorks/master/Pawn/includes/SteamWorks.inc
+ADD https://raw.githubusercontent.com/KyleSanderson/SteamWorks/master/Pawn/includes/SteamWorks.inc
 WORKDIR /get5
 
 VOLUME /get5/builds
