@@ -32,7 +32,7 @@ stock bool LogDebug(const char[] format, any...) {
 
 ConVar g_cvarDebugMode;
 char g_DebugLogFileName[PLATFORM_MAX_PATH];
-char g_DebugTag[11];
+char g_DebugTag[21];
 char g_DebugCvarName[64];
 int g_DebugAdminFlags;
 
