@@ -32,7 +32,7 @@ stock bool LogDebug(const char[] format, any...) {
 
 ConVar g_cvarDebugMode;
 char g_DebugLogFileName[PLATFORM_MAX_PATH];
-char g_DebugTag[11];
+char g_DebugTag[21];
 char g_DebugCvarName[64];
 int g_DebugAdminFlags;
 
@@ -42,7 +42,7 @@ int g_DebugAdminFlags;
  * @param convarName		A name to use for the cvar which controls debug log output. Also
  * used
  * as filename for logfile.
- * @param debugTag			Tag to prepend to messages, without []. Max 10 characters.
+ * @param debugTag			Tag to prepend to messages, without []. Max 20 characters.
  * @param adminFlag			One or more admin flagbits which define whether a user is an
  * "admin". If you pass multiple flags, users will need ALL flags.
  * @noreturn
