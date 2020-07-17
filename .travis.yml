@@ -15,21 +15,27 @@ before_script:
     - git submodule update --init
 
     # install smbuilder
-    # - git clone https://github.com/splewis/sm-builder
-    # - cd sm-builder
-    # - pip3 install --user -r requirements.txt
     - pip3 install --user git+https://github.com/mathiassmichno/sm-builder
 
     # install the sourcemod compiler
     - SMPACKAGE="http://sourcemod.net/latest.php?os=linux&version=${SMVERSION}"
-    - wget $SMPACKAGE
-    - tar xfz $(basename $SMPACKAGE)
-    - cd addons/sourcemod/scripting/
+    - wget -O sourcemod.tar.gz $SMPACKAGE
+    - tar xfz sourcemod.tar.gz
+    - pushd addons/sourcemod/scripting/
     - chmod +x spcomp
     - PATH+=":$PWD"
+
+    # add dependencies
     - cd include
+      # SteamWorks
     - wget https://raw.githubusercontent.com/KyleSanderson/SteamWorks/master/Pawn/includes/SteamWorks.inc
-    - cd ../../../..
+      # REST in Pawn
+    - wget https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext.inc
+    - mkdir ripext && cd ripext
+    - wget https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/http.inc
+    - wget https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/json.inc
+
+    - popd
     - cp -r ./dependencies/sm-json/addons/sourcemod/scripting/include/* ./addons/sourcemod/scripting/include
 
 
