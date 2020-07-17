@@ -26,9 +26,9 @@
 #include <sdktools>
 #include <sourcemod>
 #include <testing>
+#include <ripext>
 
 #undef REQUIRE_EXTENSIONS
-#include <SteamWorks>
 
 #define CHECK_READY_TIMER_INTERVAL 1.0
 #define INFO_MESSAGE_TIMER_INTERVAL 29.0
@@ -389,7 +389,7 @@ public void OnPluginStart() {
       "Loads a match config file (json or keyvalues) from a file relative to the csgo/ directory");
   RegAdminCmd(
       "get5_loadmatch_url", Command_LoadMatchUrl, ADMFLAG_CHANGEMAP,
-      "Loads a JSON config file by sending a GET request to download it. Requires either the SteamWorks extension.");
+      "Loads a JSON config file by sending a GET request to download it. Requires the REST in Pawn (sm-ripext) extension.");
   RegAdminCmd("get5_loadteam", Command_LoadTeam, ADMFLAG_CHANGEMAP,
               "Loads a team data from a file into a team");
   RegAdminCmd("get5_endmatch", Command_EndMatch, ADMFLAG_CHANGEMAP, "Force ends the current match");
@@ -848,10 +848,10 @@ public Action Command_LoadMatchUrl(int client, int args) {
     return Plugin_Handled;
   }
 
-  bool steamWorksAvaliable = LibraryExists("SteamWorks");
-  if (!steamWorksAvaliable) {
+  bool ripextAvailable = LibraryExists("ripext");
+  if (!ripextAvailable) {
     ReplyToCommand(client,
-                   "Cannot load matches from a url without the SteamWorks extension running");
+                   "Cannot load matches from a url without the REST in Pawn (sm-ripext) extension running");
   } else {
     char arg[PLATFORM_MAX_PATH];
     if (args >= 1 && GetCmdArgString(arg, sizeof(arg))) {
