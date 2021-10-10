@@ -9,7 +9,7 @@ jobs:
       OUTPUT_PATH: output/get5
       OUTPUT_SM_PATH: output/get5/addons/sourcemod
       SM_JSON_INC_PATH: get5/dependencies/sm-json/addons/sourcemod/scripting/include
-      RIPEXT_URL: https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext.inc
+      RIPEXT_INC_PATH: get5/dependencies/sm-ripext/pawn/scripting/include
 
     steps:
     - uses: actions/checkout@v2
@@ -21,8 +21,6 @@ jobs:
       with:
         version: '1.10.x'
 
-    - run: wget $RIPEXT_URL -P ripext
-
     - run: mkdir -p $OUTPUT_SM_PATH/plugins/disabled
     - run: cp -R get5/cfg $OUTPUT_PATH
     - run: cp -R get5/translations $OUTPUT_SM_PATH
@@ -30,8 +28,8 @@ jobs:
     - run: cp -R get5/scripting $OUTPUT_SM_PATH
     - run: cp get5/README.md $OUTPUT_PATH
     - run: cp get5/LICENSE $OUTPUT_PATH
-    - run: spcomp get5/scripting/get5.sp -i ripext -i $SM_JSON_INC_PATH -o $OUTPUT_SM_PATH/plugins/get5.smx
-    - run: spcomp get5/scripting/get5_mysqlstats.sp -i ripext -i $SM_JSON_INC_PATH -o $OUTPUT_SM_PATH/plugins/disabled/get5_mysqlstats.smx
+    - run: spcomp get5/scripting/get5.sp -i $RIPEXT_INC_PATH -i $SM_JSON_INC_PATH -o $OUTPUT_SM_PATH/plugins/get5.smx
+    - run: spcomp get5/scripting/get5_mysqlstats.sp -i $RIPEXT_INC_PATH -i $SM_JSON_INC_PATH -o $OUTPUT_SM_PATH/plugins/disabled/get5_mysqlstats.smx
 
     - run: mkdir -p artifacts
     - run: tar -zcvf artifacts/get5.tar.gz $OUTPUT_PATH/
