@@ -199,61 +199,47 @@ static void MatchConfigFail(const char[] reason, any...) {
 
 stock bool LoadMatchFromUrl(const char[] url, ArrayList paramNames = null,
                             ArrayList paramValues = null) {
-  bool steamWorksAvaliable = LibraryExists("SteamWorks");
+  bool ripextAvaliable = LibraryExists("ripext");
 
   char cleanedUrl[1024];
+  LogDebug("url: %s", url);
   strcopy(cleanedUrl, sizeof(cleanedUrl), url);
   ReplaceString(cleanedUrl, sizeof(cleanedUrl), "\"", "");
   strcopy(g_LoadedConfigUrl, sizeof(g_LoadedConfigUrl), cleanedUrl);
+  LogDebug("cleanedUrl: %s", cleanedUrl);
 
-  if (steamWorksAvaliable) {
-    // Add the protocol strings if missing (only http).
-    if (StrContains(cleanedUrl, "http://") == -1 && StrContains(cleanedUrl, "https://") == -1) {
-      Format(cleanedUrl, sizeof(cleanedUrl), "http://%s", cleanedUrl);
-    }
-    LogDebug("cleanedUrl (SteamWorks) = %s", cleanedUrl);
-    Handle request = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, cleanedUrl);
-    if (request == INVALID_HANDLE) {
+  if (ripextAvaliable) {
+    HTTPRequest matchHTTPRequest = new HTTPRequest(cleanedUrl);
+    if (matchHTTPRequest == INVALID_HANDLE) {
       MatchConfigFail("Failed to create HTTP GET request");
       return false;
     }
 
-    if (paramNames != null && paramValues != null) {
-      if (paramNames.Length != paramValues.Length) {
-        MatchConfigFail("request paramNames and paramValues size mismatch");
-        return false;
-      }
-
-      char param[128];
-      char value[128];
-      for (int i = 0; i < paramNames.Length; i++) {
-        paramNames.GetString(i, param, sizeof(param));
-        paramValues.GetString(i, value, sizeof(value));
-        SteamWorks_SetHTTPRequestGetOrPostParameter(request, param, value);
-      }
-    }
-
-    SteamWorks_SetHTTPCallbacks(request, SteamWorks_OnMatchConfigReceived);
-    SteamWorks_SendHTTPRequest(request);
+    matchHTTPRequest.Get(OnMatchConfigReceived);
     return true;
 
   } else {
-    MatchConfigFail("SteamWorks extension is not available");
+    MatchConfigFail("REST in Pawn extension is not available");
     return false;
   }
 }
 
-// SteamWorks HTTP callback for fetching a workshop collection
-public int SteamWorks_OnMatchConfigReceived(Handle request, bool failure, bool requestSuccessful,
-                                     EHTTPStatusCode statusCode, Handle data) {
-  if (failure || !requestSuccessful) {
-    MatchConfigFail("Steamworks GET request failed, HTTP status code = %d", statusCode);
-    return;
+// sm-ripext HTTP callback fintor fetching a workshop collection
+void OnMatchConfigReceived(HTTPResponse response, any value)
+{
+  if (response.Status != HTTPStatus_OK || response.Data == null) {
+      MatchConfigFail("GET request failed, HTTP status code = %d", response.Status);
+      return;
   }
+
+  // Indicate that the response is a JSON object
+  JSONObject remoteConfigJson = view_as<JSONObject>(response.Data);
+
 
   char remoteConfig[PLATFORM_MAX_PATH];
   GetTempFilePath(remoteConfig, sizeof(remoteConfig), REMOTE_CONFIG_PATTERN);
-  SteamWorks_WriteHTTPResponseBodyToFile(request, remoteConfig);
+  remoteConfigJson.ToFile(remoteConfig);
+  delete remoteConfigJson;
   LoadMatchConfig(remoteConfig);
 
   strcopy(g_LoadedConfigFile, sizeof(g_LoadedConfigFile), g_LoadedConfigUrl);

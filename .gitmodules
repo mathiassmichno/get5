@@ -1,3 +1,6 @@
 [submodule "dependencies/sm-json"]
 	path = dependencies/sm-json
 	url = https://github.com/clugg/sm-json
+[submodule "dependencies/sm-ripext"]
+	path = dependencies/sm-ripext
+	url = https://github.com/ErikMinekus/sm-ripext
