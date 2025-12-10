@@ -20,16 +20,21 @@ before_script:
 
     # install the sourcemod compiler
     - SMPACKAGE="http://sourcemod.net/latest.php?os=linux&version=${SMVERSION}"
-    - wget $SMPACKAGE
-    - tar xfz $(basename $SMPACKAGE)
-    - cd addons/sourcemod/scripting/
+    - wget -O sourcemod.tar.gz $SMPACKAGE
+    - tar xfz sourcemod.tar.gz
+    - pushd addons/sourcemod/scripting/
     - chmod +x spcomp
     - PATH+=":$PWD"
+
+    # add dependencies
     - cd include
+      # SteamWorks
     - wget https://raw.githubusercontent.com/KyleSanderson/SteamWorks/master/Pawn/includes/SteamWorks.inc
-    - cd ../../../..
+
+    - popd
     - cp -r ./dependencies/sm-json/addons/sourcemod/scripting/include/* ./addons/sourcemod/scripting/include
-    
+      # REST in Pawn
+    - cp -r ./dependencies/sm-ripext/pawn/scripting/include/* ./addons/sourcemod/scripting/include
 
 script:
     - smbuilder --flags="-E"
